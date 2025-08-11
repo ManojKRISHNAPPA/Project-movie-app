@@ -1,0 +1,62 @@
+pipeline {
+  agent any
+
+  tools {
+    maven 'maven'
+    jdk 'java-11'
+  }
+
+  stages {
+    stage('Git Checkout') {
+      steps {
+        git branch: 'devsecops', url: 'https://github.com/ManojKRISHNAPPA/Project-movie-app.git'
+      }
+    }
+
+    stage('Build Artifact - Maven') {
+      steps {
+        sh "mvn clean package -DskipTests=true"
+        archiveArtifacts artifacts: 'target/*.jar'
+      }
+    }
+
+    stage('Unit Tests - JUnit and JaCoCo') {
+      steps {
+        sh "mvn test"
+      }
+      post {
+        always {
+          junit 'target/surefire-reports/*.xml'
+          jacoco execPattern: 'target/jacoco.exec',
+                 classPattern: 'target/classes',
+                 sourcePattern: 'src/main/java'
+        }
+      }
+    }
+
+    stage('Mutation Tests - PIT') {
+      steps {
+        sh "mvn org.pitest:pitest-maven:mutationCoverage"
+      }
+      post {
+        always {
+          pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+        }
+      }
+    }
+
+    stage('sonarqube-sast'){
+        steps{
+            sh """
+                mvn clean verify sonar:sonar \
+                -Dsonar.projectKey=devsecops \
+                -Dsonar.projectName='devsecops' \
+                -Dsonar.host.url=http://3.84.99.102:9000 \
+                -Dsonar.token=sqp_aefba6ac371af698572678a60a6f8e8729172eb0
+            """
+        }
+
+    }
+
+  }
+}
