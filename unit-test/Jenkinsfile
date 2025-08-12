@@ -30,6 +30,24 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
+        
+        stage('Generate JaCoCo Report') {
+            steps {
+                sh 'mvn jacoco:report'
+            }
+        }
+
+        stage('Publish Code Coverage') {
+            steps {
+                jacoco execPattern: '**/target/jacoco.exec',
+                       classPattern: '**/target/classes',
+                       sourcePattern: '**/src/main/java',
+                       inclusionPattern: '**/*.class'
+            }
+        }
+    }
+
+
     }
 
     post {
