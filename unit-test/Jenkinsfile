@@ -39,21 +39,19 @@ pipeline {
 
         stage('Publish Code Coverage') {
             steps {
-                jacoco execPattern: '**/target/jacoco.exec',
-                       classPattern: '**/target/classes',
-                       sourcePattern: '**/src/main/java',
-                       inclusionPattern: '**/*.class'
+                jacoco(
+                    execPattern: '**/target/jacoco.exec',
+                    classPattern: '**/target/classes',
+                    sourcePattern: '**/src/main/java',
+                    inclusionPattern: '**/*.class'
+                )
             }
         }
     }
 
-
-    }
-
     post {
         always {
-            // Publish JUnit test results if they exist
             junit '**/target/surefire-reports/*.xml'
         }
     }
-
+}
