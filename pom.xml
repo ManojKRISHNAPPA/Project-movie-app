@@ -100,7 +100,7 @@
       </plugin>
     </plugins>
 
-    <!-- ✅ FIXED: pluginManagement moved here -->
+
     <pluginManagement>
       <plugins>
         <plugin>
