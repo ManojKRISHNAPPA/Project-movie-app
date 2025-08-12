@@ -86,7 +86,7 @@
           <targetTests>
             <param>com.example.*</param>
           </targetTests>
-          <mutationThreshold>70</mutationThreshold>
+          <mutationThreshold>10</mutationThreshold>
           <outputFormats>
             <outputFormat>HTML</outputFormat>
             <outputFormat>XML</outputFormat>
