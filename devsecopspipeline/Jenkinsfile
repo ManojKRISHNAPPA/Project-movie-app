@@ -1,0 +1,68 @@
+pipeline{
+    agent any
+
+    tools {
+        jdk 'java-11'
+        maven 'maven'
+    }
+
+    environment {
+        MAVEN_OPTS = '-Dnet.bytebuddy.experimental=true -XX:+EnableDynamicAgentLoading'
+    }
+    stages{
+        stage('Git Checkout') {
+            steps {
+                git branch: 'devsecops', url: 'https://github.com/ManojKRISHNAPPA/Project-movie-app.git'
+            }
+        }
+
+        stage('compile'){
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
+
+       stage('Unit Test') {
+            steps {
+                sh 'mvn test'
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package -DskipTests=true'
+            }
+        }
+
+        stage('Generate Jacoco report') {
+            steps {
+                sh 'mvn jacoco:report'
+            }
+        }
+
+        stage('Publish Jacoco report') {
+            steps {
+                jacoco execPattern: '**/target/jacoco.exec', classPattern: '**/target/classes', sourcePattern: '**/src/main/java', exclusionPattern: '', changeBuildStatus: true
+            }
+        }
+
+        stage('SonarQube - SAST'){
+            steps{
+                sh """
+                    mvn sonar:sonar \
+                    -Dsonar.projectKey=Movie-application \
+                    -Dsonar.host.url=http://3.91.180.162:9000 \
+                    -Dsonar.login=9904b77f785737523c912f54efdba05f3866117a
+                """
+            }
+        }       
+    
+    
+    }   
+
+}
