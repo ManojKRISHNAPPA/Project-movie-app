@@ -1,28 +1,27 @@
 pipeline{
-    agent any
-    tools{
-        maven 'maven'
-        jdk 'java-11'
-    }
+ agent {
+  label 'prod'
+ }
+ tools{
+  jdk 'java-11'
+  maven 'maven'
+ }
 
-    stages{
-        stage('git-checkout'){
-            steps{
-                git branch: 'main', url: 'https://github.com/ManojKRISHNAPPA/Project-movie-app.git'
-            }
-        }
-
-        stage('compile'){
-            steps{
-                sh 'mvn compile'
-            }
-        }
-
-        stage('Build'){
-            steps{
-                sh 'mvn clean package'
-            }
-        }
-
-    }
+ stages{
+  stage('git-checkout'){
+   steps{
+    git branch: 'main', url: 'https://github.com/prathikmr7/Project-movie-app1.git'
+   }
+  }
+  stage('compile'){
+   steps{
+    sh 'mvn compile'
+   }
+  }
+  stage('Build'){
+   steps{
+    sh 'mvn clean package'
+   }
+  }
+ }
 }
